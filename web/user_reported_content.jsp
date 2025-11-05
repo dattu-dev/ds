@@ -5,6 +5,10 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:if test="${empty sessionScope.account}">
+    <c:redirect url="login"/>
+</c:if>
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,6 +16,13 @@
         <title>User-reported content Page</title>
     </head>
     <body>
+        <h2>Welcome ${sessionScope.fullName} !</h2>
+        <h3>User-reported content</h3>
+        <a href="welcome.jsp">Back to Menu</a> | <a href="logout">Logout</a>
+        
+        <hr>
+        
         <!--your code here-->
+        <p>This page is under construction.</p>
     </body>
 </html>
