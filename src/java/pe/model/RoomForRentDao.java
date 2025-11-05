@@ -31,8 +31,13 @@ public class RoomForRentDao {
             sql.append(" AND r.price <= ?");
         }
         
-        if (sortOrder != null && (sortOrder.equals("ASC") || sortOrder.equals("DESC"))) {
-            sql.append(" ORDER BY r.price ").append(sortOrder);
+        // Validate and sanitize sortOrder to prevent SQL injection
+        if (sortOrder != null) {
+            if ("ASC".equalsIgnoreCase(sortOrder)) {
+                sql.append(" ORDER BY r.price ASC");
+            } else if ("DESC".equalsIgnoreCase(sortOrder)) {
+                sql.append(" ORDER BY r.price DESC");
+            }
         }
         
         try (Connection conn = DbUtils.getConnection();

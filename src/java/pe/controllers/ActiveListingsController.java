@@ -24,6 +24,28 @@ import pe.model.RoomForRentDto;
 @WebServlet(name = "ActiveListingsController", urlPatterns = {"/active-listings"})
 public class ActiveListingsController extends HttpServlet {
 
+    private String validateNumericParameter(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            Double.parseDouble(value);
+            return value;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+    
+    private String validateSortOrder(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        if ("ASC".equals(value) || "DESC".equals(value)) {
+            return value;
+        }
+        return null;
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -90,24 +112,25 @@ public class ActiveListingsController extends HttpServlet {
                     // Invalid room ID, ignore
                 }
                 
-                String minPrice = request.getParameter("minPrice");
-                String maxPrice = request.getParameter("maxPrice");
-                String sortOrder = request.getParameter("sortOrder");
+                // Validate and sanitize parameters to prevent open redirect
+                String minPrice = validateNumericParameter(request.getParameter("minPrice"));
+                String maxPrice = validateNumericParameter(request.getParameter("maxPrice"));
+                String sortOrder = validateSortOrder(request.getParameter("sortOrder"));
                 
                 StringBuilder redirectUrl = new StringBuilder("active-listings");
                 boolean hasParams = false;
                 
-                if (minPrice != null && !minPrice.isEmpty()) {
+                if (minPrice != null) {
                     redirectUrl.append(hasParams ? "&" : "?");
                     redirectUrl.append("minPrice=").append(minPrice);
                     hasParams = true;
                 }
-                if (maxPrice != null && !maxPrice.isEmpty()) {
+                if (maxPrice != null) {
                     redirectUrl.append(hasParams ? "&" : "?");
                     redirectUrl.append("maxPrice=").append(maxPrice);
                     hasParams = true;
                 }
-                if (sortOrder != null && !sortOrder.isEmpty()) {
+                if (sortOrder != null) {
                     redirectUrl.append(hasParams ? "&" : "?");
                     redirectUrl.append("sortOrder=").append(sortOrder);
                     hasParams = true;
