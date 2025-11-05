@@ -17,7 +17,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class MainController extends HttpServlet {
 
-    private static final String LOGIN="login.jsp";
+    private static final String LOGIN = "login.jsp";
+    private static final String ACTIVE_LISTINGS = "active_listings.jsp";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -30,15 +32,21 @@ public class MainController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url= LOGIN;
+        String url = LOGIN;
         try {
-            String action= request.getParameter("action");
+            String action = request.getParameter("action");
             //-----            your code here   --------------------------------
-            
+            if ("Login".equals(action)) {
+                url = "LoginController";
+            } else if ("Logout".equals(action)) {
+                url = "LogoutController";
+            } else if ("ActiveListings".equals(action)) {
+                url = ACTIVE_LISTINGS;
+            }
             //-----            your code here   --------------------------------
         } catch (Exception e) {
-            log("error at MainController: "+ e.toString());
-        }finally{
+            log("error at MainController: " + e.toString());
+        } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
     }

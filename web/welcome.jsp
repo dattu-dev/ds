@@ -23,7 +23,7 @@
 
         <h3>Menu</h3>
         <ul>
-            <li><a href="active-listings">View Active Listings</a></li>
+            <li><a href="MainController?action=ActiveListings">View Active Listings</a></li>
 
             <c:if test="${sessionScope.role == 1}">
                 <li><a href="reported-listings">View Reported Content</a></li>
