@@ -5,6 +5,8 @@
 package pe.controllers;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -117,26 +119,31 @@ public class ActiveListingsController extends HttpServlet {
                 String maxPrice = validateNumericParameter(request.getParameter("maxPrice"));
                 String sortOrder = validateSortOrder(request.getParameter("sortOrder"));
                 
-                StringBuilder redirectUrl = new StringBuilder("active-listings");
-                boolean hasParams = false;
-                
-                if (minPrice != null) {
-                    redirectUrl.append(hasParams ? "&" : "?");
-                    redirectUrl.append("minPrice=").append(minPrice);
-                    hasParams = true;
+                try {
+                    StringBuilder redirectUrl = new StringBuilder("active-listings");
+                    boolean hasParams = false;
+                    
+                    if (minPrice != null) {
+                        redirectUrl.append(hasParams ? "&" : "?");
+                        redirectUrl.append("minPrice=").append(URLEncoder.encode(minPrice, StandardCharsets.UTF_8.toString()));
+                        hasParams = true;
+                    }
+                    if (maxPrice != null) {
+                        redirectUrl.append(hasParams ? "&" : "?");
+                        redirectUrl.append("maxPrice=").append(URLEncoder.encode(maxPrice, StandardCharsets.UTF_8.toString()));
+                        hasParams = true;
+                    }
+                    if (sortOrder != null) {
+                        redirectUrl.append(hasParams ? "&" : "?");
+                        redirectUrl.append("sortOrder=").append(URLEncoder.encode(sortOrder, StandardCharsets.UTF_8.toString()));
+                        hasParams = true;
+                    }
+                    
+                    response.sendRedirect(redirectUrl.toString());
+                } catch (Exception e) {
+                    // Encoding error, redirect to base page
+                    response.sendRedirect("active-listings");
                 }
-                if (maxPrice != null) {
-                    redirectUrl.append(hasParams ? "&" : "?");
-                    redirectUrl.append("maxPrice=").append(maxPrice);
-                    hasParams = true;
-                }
-                if (sortOrder != null) {
-                    redirectUrl.append(hasParams ? "&" : "?");
-                    redirectUrl.append("sortOrder=").append(sortOrder);
-                    hasParams = true;
-                }
-                
-                response.sendRedirect(redirectUrl.toString());
             }
             
         } catch (ClassNotFoundException ex) {
