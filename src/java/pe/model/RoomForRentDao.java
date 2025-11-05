@@ -24,8 +24,11 @@ public class RoomForRentDao {
         List<RoomForRentDto> listings = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT r.*, a.username FROM RoomForRent r JOIN Account a ON r.username = a.username WHERE r.status = 0");
         
-        if (minPrice != null && maxPrice != null) {
-            sql.append(" AND r.price BETWEEN ? AND ?");
+        if (minPrice != null) {
+            sql.append(" AND r.price >= ?");
+        }
+        if (maxPrice != null) {
+            sql.append(" AND r.price <= ?");
         }
         
         if (sortOrder != null && (sortOrder.equals("ASC") || sortOrder.equals("DESC"))) {
@@ -36,8 +39,10 @@ public class RoomForRentDao {
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             
             int paramIndex = 1;
-            if (minPrice != null && maxPrice != null) {
+            if (minPrice != null) {
                 ps.setDouble(paramIndex++, minPrice);
+            }
+            if (maxPrice != null) {
                 ps.setDouble(paramIndex++, maxPrice);
             }
             

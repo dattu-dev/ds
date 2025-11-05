@@ -42,11 +42,15 @@ public class ActiveListingsController extends HttpServlet {
             Double minPrice = null;
             Double maxPrice = null;
             
-            if (minPriceStr != null && !minPriceStr.trim().isEmpty()) {
-                minPrice = Double.parseDouble(minPriceStr);
-            }
-            if (maxPriceStr != null && !maxPriceStr.trim().isEmpty()) {
-                maxPrice = Double.parseDouble(maxPriceStr);
+            try {
+                if (minPriceStr != null && !minPriceStr.trim().isEmpty()) {
+                    minPrice = Double.parseDouble(minPriceStr);
+                }
+                if (maxPriceStr != null && !maxPriceStr.trim().isEmpty()) {
+                    maxPrice = Double.parseDouble(maxPriceStr);
+                }
+            } catch (NumberFormatException e) {
+                // Invalid number format, ignore and use null
             }
             
             RoomForRentDao dao = new RoomForRentDao();
@@ -78,23 +82,35 @@ public class ActiveListingsController extends HttpServlet {
             String action = request.getParameter("action");
             
             if ("expire".equals(action)) {
-                int roomId = Integer.parseInt(request.getParameter("roomId"));
-                RoomForRentDao dao = new RoomForRentDao();
-                dao.updateRoomStatus(roomId, 2);
+                try {
+                    int roomId = Integer.parseInt(request.getParameter("roomId"));
+                    RoomForRentDao dao = new RoomForRentDao();
+                    dao.updateRoomStatus(roomId, 2);
+                } catch (NumberFormatException e) {
+                    // Invalid room ID, ignore
+                }
                 
                 String minPrice = request.getParameter("minPrice");
                 String maxPrice = request.getParameter("maxPrice");
                 String sortOrder = request.getParameter("sortOrder");
                 
-                StringBuilder redirectUrl = new StringBuilder("active-listings?");
+                StringBuilder redirectUrl = new StringBuilder("active-listings");
+                boolean hasParams = false;
+                
                 if (minPrice != null && !minPrice.isEmpty()) {
-                    redirectUrl.append("minPrice=").append(minPrice).append("&");
+                    redirectUrl.append(hasParams ? "&" : "?");
+                    redirectUrl.append("minPrice=").append(minPrice);
+                    hasParams = true;
                 }
                 if (maxPrice != null && !maxPrice.isEmpty()) {
-                    redirectUrl.append("maxPrice=").append(maxPrice).append("&");
+                    redirectUrl.append(hasParams ? "&" : "?");
+                    redirectUrl.append("maxPrice=").append(maxPrice);
+                    hasParams = true;
                 }
                 if (sortOrder != null && !sortOrder.isEmpty()) {
+                    redirectUrl.append(hasParams ? "&" : "?");
                     redirectUrl.append("sortOrder=").append(sortOrder);
+                    hasParams = true;
                 }
                 
                 response.sendRedirect(redirectUrl.toString());
